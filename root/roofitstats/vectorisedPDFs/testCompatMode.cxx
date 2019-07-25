@@ -20,24 +20,23 @@
 #include "RooRealVar.h"
 #include "RooPolynomial.h"
 #include "TMath.h"
+#include "RooRandom.h"
 #include <math.h>
 
 using namespace std;
 
 
-class TestRooPolynomial : public PDFFitTest
+class TestRooPolynomial : public PDFTest
 {
   protected:
     TestRooPolynomial() :
-      PDFFitTest("Polynomial(...)")
+      PDFTest("Polynomial(...)")
   {
-      // Declare variables x,mean,sigma with associated name, title, initial value and allowed range
       auto x = new RooRealVar("x", "x", 0, 10);
       auto a1 = new RooRealVar("a1", "First coefficient", 5, 0, 10);
       auto a2 = new RooRealVar("a2", "Second coefficient", 1, 0, 10);
       auto a3 = new RooFormulaVar("a3", "Third coefficient", "a1+a2", RooArgList(*a1, *a2));
 
-      // Build gaussian p.d.f in terms of x,mean and sigma
       _pdf = std::make_unique<RooPolynomial>("pol", "Polynomial", *x, RooArgList(*a1, *a2, *a3));
       _pdf->Print("t");
 
@@ -54,6 +53,10 @@ class TestRooPolynomial : public PDFFitTest
       _otherObjects.addOwned(*a3);
   }
 };
+
+COMPARE_FIXED_VALUES_UNNORM(TestRooPolynomial, CompareFixedUnnorm)
+COMPARE_FIXED_VALUES_NORM(TestRooPolynomial, CompareFixedNorm)
+COMPARE_FIXED_VALUES_NORM_LOG(TestRooPolynomial, CompareFixedNormLog)
 
 FIT_TEST_SCALAR(TestRooPolynomial, RunScalar)
 FIT_TEST_BATCH(TestRooPolynomial, RunBatch)
@@ -180,11 +183,11 @@ protected:
 };
 
 
-class TestNonVecGauss : public PDFFitTest
+class TestNonVecGauss : public PDFTest
 {
   protected:
     TestNonVecGauss() :
-      PDFFitTest("GaussNoBatches", 200000)
+      PDFTest("GaussNoBatches", 200000)
   {
       // Declare variables x,mean,sigma with associated name, title, initial value and allowed range
         auto x = new RooRealVar("x", "x", -10, 10);
@@ -204,6 +207,10 @@ class TestNonVecGauss : public PDFFitTest
       }
   }
 };
+
+COMPARE_FIXED_VALUES_UNNORM(TestNonVecGauss, CompareFixedUnnorm)
+COMPARE_FIXED_VALUES_NORM(TestNonVecGauss, CompareFixedNorm)
+COMPARE_FIXED_VALUES_NORM_LOG(TestNonVecGauss, CompareFixedNormLog)
 
 FIT_TEST_SCALAR(TestNonVecGauss, RunScalar)
 FIT_TEST_BATCH(TestNonVecGauss, RunBatch)
@@ -234,17 +241,21 @@ class TestNonVecGaussWeighted : public PDFTestWeightedData
   }
 };
 
+COMPARE_FIXED_VALUES_UNNORM(TestNonVecGaussWeighted, CompareFixedUnnorm)
+COMPARE_FIXED_VALUES_NORM(TestNonVecGaussWeighted, CompareFixedNorm)
+COMPARE_FIXED_VALUES_NORM_LOG(TestNonVecGaussWeighted, CompareFixedNormLog)
+
 FIT_TEST_SCALAR(TestNonVecGaussWeighted, RunScalar)
 FIT_TEST_BATCH(TestNonVecGaussWeighted, RunBatch)
 FIT_TEST_BATCH_VS_SCALAR(TestNonVecGaussWeighted, CompareBatchScalar)
 
 
 
-class TestNonVecGaussInMeanAndX : public PDFFitTest
+class TestNonVecGaussInMeanAndX : public PDFTest
 {
   protected:
     TestNonVecGaussInMeanAndX() :
-      PDFFitTest("GaussNoBatches(x, mean)")
+      PDFTest("GaussNoBatches(x, mean)")
   {
       // Declare variables x,mean,sigma with associated name, title, initial value and allowed range
       auto x = new RooRealVar("x", "x", -10, 10);
@@ -265,6 +276,10 @@ class TestNonVecGaussInMeanAndX : public PDFFitTest
       }
   }
 };
+
+COMPARE_FIXED_VALUES_UNNORM(TestNonVecGaussInMeanAndX, CompareFixedUnnorm)
+COMPARE_FIXED_VALUES_NORM(TestNonVecGaussInMeanAndX, CompareFixedNorm)
+COMPARE_FIXED_VALUES_NORM_LOG(TestNonVecGaussInMeanAndX, CompareFixedNormLog)
 
 FIT_TEST_SCALAR(TestNonVecGaussInMeanAndX, RunScalar)
 FIT_TEST_BATCH(TestNonVecGaussInMeanAndX, RunBatch)
