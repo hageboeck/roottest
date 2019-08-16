@@ -18,4 +18,5 @@ if(ROOT_roofit_FOUND)
                  COPY_TO_BUILDDIR ${CMAKE_CURRENT_SOURCE_DIR}/stabilityTests_data_1.root)
 
   add_subdirectory(vectorisedPDFs) 
+  add_subdirectory(LHCb)
 endif()
