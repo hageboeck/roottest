@@ -40,4 +40,6 @@ endif()
   if(NOT MSVC OR win_broken_tests)
     add_subdirectory(vectorisedPDFs)
   endif()
+
+  add_subdirectory(LHCb)
 endif()
