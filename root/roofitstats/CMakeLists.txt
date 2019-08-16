@@ -15,4 +15,5 @@ if(ROOT_roofit_FOUND)
                     POSTCMD diff ${CMAKE_CURRENT_SOURCE_DIR}/ASCII-in-out_data.txt ./ASCII-in-out_result.txt)
 
   add_subdirectory(vectorisedPDFs) 
+  add_subdirectory(LHCb)
 endif()
