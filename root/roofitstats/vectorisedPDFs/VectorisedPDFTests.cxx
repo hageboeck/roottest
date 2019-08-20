@@ -176,7 +176,7 @@ void PDFTest::kickParameters() {
   setValuesConstant(_otherObjects, true);
 }
 
-void PDFTest::compareFixedValues(bool normalise, bool compareLogs, bool runTimer, unsigned int nChunks) {
+void PDFTest::compareFixedValues(double& maximalError, bool normalise, bool compareLogs, bool runTimer, unsigned int nChunks) {
   if (!_dataUniform)
     makeUniformData();
 
@@ -275,6 +275,7 @@ void PDFTest::compareFixedValues(bool normalise, bool compareLogs, bool runTimer
 
   // Compare runs
   unsigned int nOff = 0;
+  maximalError = 0.0;
   ROOT::Math::KahanSum<> sumDiffs;
   ROOT::Math::KahanSum<> sumVars;
   for (unsigned int i=0; i < outputsBatch.size(); ++i) {
@@ -282,6 +283,7 @@ void PDFTest::compareFixedValues(bool normalise, bool compareLogs, bool runTimer
         (outputsScalar[i]-outputsBatch[i])/outputsBatch[i]
         : outputsScalar[i];
 
+    maximalError = std::max(maximalError,fabs(relDiff));
     sumDiffs += relDiff;
     sumVars  += relDiff * relDiff;
 
@@ -293,6 +295,7 @@ void PDFTest::compareFixedValues(bool normalise, bool compareLogs, bool runTimer
         *observables = *_dataUniform->get(i);
         std::cout << "Compare event " << i << "\t" << std::setprecision(15);
         observables->printStream(std::cout, RooPrintable::kValue | RooPrintable::kName, RooPrintable::kStandard, "  ");
+        _parameters.Print("V");
         std::cout << "\n\tscalar   = " << outputsScalar[i] << "\tpdf->getVal() = " << _pdf->getVal()
                         << "\n\tbatch    = " << outputsBatch[i]
                                                              << "\n\trel diff = " << relDiff << std::endl;
