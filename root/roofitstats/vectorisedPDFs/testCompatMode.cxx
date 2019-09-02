@@ -203,6 +203,8 @@ class TestNonVecGauss : public PDFTest
       for (auto par : {mean, sigma}) {
         _parameters.addOwned(*par);
       }
+
+      _toleranceCompareLogs = 3E-14;
   }
 };
 
@@ -232,6 +234,8 @@ class TestNonVecGaussWeighted : public PDFTestWeightedData
       for (auto par : {mean, sigma}) {
         _parameters.addOwned(*par);
       }
+      
+      _toleranceCompareLogs = 3E-14;
   }
 };
 
