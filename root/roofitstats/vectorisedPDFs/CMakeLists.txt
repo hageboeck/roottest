@@ -51,6 +51,9 @@ ROOT_ADD_GTEST(testGamma testGamma.cxx
 if(ROOT_mathmore_FOUND)
   ROOT_ADD_GTEST(testLegendre testLegendre.cxx
                 LIBRARIES VectorisedPDFTests ROOT::RooFitMore)
+
+  ROOT_ADD_GTEST(testHypatia2 testHypatia2.cxx
+                 LIBRARIES VectorisedPDFTests ROOT::RooFitMore)
 endif()
 ROOT_ADD_GTEST(testChiSquarePdf testChiSquarePdf.cxx
               LIBRARIES VectorisedPDFTests)
