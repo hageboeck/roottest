@@ -45,9 +45,12 @@ ROOT_ADD_GTEST(testCBShape testCBShape.cxx
               LIBRARIES VectorisedPDFTests)
 ROOT_ADD_GTEST(testGamma testGamma.cxx
               LIBRARIES VectorisedPDFTests)
+ROOT_ADD_GTEST(testChiSquarePdf testChiSquarePdf.cxx
+              LIBRARIES VectorisedPDFTests)
 if(ROOT_mathmore_FOUND)
    ROOT_ADD_GTEST(testLegendre testLegendre.cxx
                  LIBRARIES VectorisedPDFTests ROOT::RooFitMore)
+   ROOT_ADD_GTEST(testHypatia2 testHypatia2.cxx
+                 LIBRARIES VectorisedPDFTests ROOT::RooFitMore)
 endif()
-ROOT_ADD_GTEST(testChiSquarePdf testChiSquarePdf.cxx
-              LIBRARIES VectorisedPDFTests)
+
