@@ -99,19 +99,21 @@ TEST(LHCb002, JohnsonPlusGaussFit) {
 
   RooGenericPdf bkg( "bkg", "TMath::Power(mass,b)*TMath::Exp(-c*mass)", RooArgList(mass, b, c) );
 
-  RooFormulaVar f_pos("f_pos", "1.E6 * 0.5*(1 + asymm_sig)", RooArgSet(asymm_sig) );
-  RooFormulaVar f_neg("f_neg", "1.E6 * 0.5*(1 - asymm_sig)", RooArgSet(asymm_sig) );
-  RooFormulaVar f_pos_bkg("f_pos_bkg", "1.E6 * 0.5*(1 + asymm_bkg)", RooArgSet(asymm_bkg) );
-  RooFormulaVar f_neg_bkg("f_neg_bkg", "1.E6 * 0.5*(1 - asymm_bkg)", RooArgSet(asymm_bkg) );
+//  RooFormulaVar f_pos("f_pos", "1.E0 * 0.5*(1 + asymm_sig)", RooArgSet(asymm_sig) );
+//  RooFormulaVar f_neg("f_neg", "1.E0 * 0.5*(1 - asymm_sig)", RooArgSet(asymm_sig) );
+//  RooFormulaVar f_pos_bkg("f_pos_bkg", "1.E0 * 0.5*(1 + asymm_bkg)", RooArgSet(asymm_bkg) );
+//  RooFormulaVar f_neg_bkg("f_neg_bkg", "1.E0 * 0.5*(1 - asymm_bkg)", RooArgSet(asymm_bkg) );
 
   
-  RooRealVar N_sig( "N_sig", "N_sig", 30, 1, 100);
-  RooRealVar N_bkg( "N_bkg", "N_bkg", 12, 1, 100);
+  RooRealVar N_sig("N_sig", "N_sig", 30E6, 1.E6, 100.E6);
+  RooRealVar N_bkg("N_bkg", "N_bkg", 12E6, 1.E6, 100.E6);
+  N_sig.setError(100.);
+  N_bkg.setError(100.);
 
-  RooProduct N_sig_pos("N_sig_pos", "N_sig * f_pos", RooArgSet(N_sig, f_pos));
-  RooProduct N_sig_neg("N_sig_neg", "N_sig * f_neg", RooArgSet(N_sig, f_neg));
-  RooProduct N_bkg_pos("N_bkg_pos", "N_bkg * f_pos_bkg", RooArgSet(N_bkg, f_pos_bkg));
-  RooProduct N_bkg_neg("N_bkg_neg", "N_bkg * f_neg_bkg", RooArgSet(N_bkg, f_neg_bkg));
+  RooFormulaVar N_sig_pos("N_sig_pos", "N_sig * 0.5*(1. + asymm_sig)", RooArgSet(N_sig, asymm_sig));
+  RooFormulaVar N_sig_neg("N_sig_neg", "N_sig * 0.5*(1. - asymm_sig)", RooArgSet(N_sig, asymm_sig));
+  RooFormulaVar N_bkg_pos("N_bkg_pos", "N_bkg * 0.5*(1. + asymm_bkg)", RooArgSet(N_bkg, asymm_bkg));
+  RooFormulaVar N_bkg_neg("N_bkg_neg", "N_bkg * 0.5*(1. - asymm_bkg)", RooArgSet(N_bkg, asymm_bkg));
 
   RooAddPdf pdf_pos("pdf_tot_pos", "pdf_tot_pos",
       RooArgList(sig_pos,   bkg),
@@ -144,6 +146,12 @@ TEST(LHCb002, JohnsonPlusGaussFit) {
   RooDataHist* data_h = new RooDataHist("data", "data", mass, Index(cat),
       Import( "pos", *h_mass_plus ),
       Import( "neg", *h_mass_minus ));
+
+  for (auto param : {&frac_g1, &frac_g2, &mean_g1, &mean_g2, &mean_g3, &sigma_1, &sigma_2, &sigma_3}) {
+    param->setConstant();
+  }
+
+  pdf_tot->getParameters(data_h)->Print("V");
 
 
   RooChi2Var chi2("chi2", "chi2", *pdf_tot, *data_h, Extended(true));
@@ -180,13 +188,12 @@ TEST(LHCb002, JohnsonPlusGaussFit) {
     const double val = par->getVal();
     const double ref = otherPar->getVal();
     const double relDiff = ref != 0. ? fabs((val - ref)/ref) : fabs(val - ref);
-    EXPECT_LT(relDiff, 1.E-6) << "Check parameter " << par->GetName()
+    EXPECT_LT(relDiff, 1.E-4) << "Check parameter " << par->GetName()
         << "\n\tfit=" << val << "\n\tref=" << ref;
   }
   
 #else
-  TCanvas *c_pos = new TCanvas("c_pos", "c_pos", 900, 900);
-  c_pos->cd();
+  TCanvas c_pos("c_pos", "c_pos", 900, 900);
   RooPlot * plot_pos = mass.frame( x1, x2);
   data_h->plotOn( plot_pos, Cut("cat==cat::pos"));
   pdf_tot->plotOn(plot_pos, Slice(cat, "pos"), ProjWData( cat, *data_h ), LineColor(kBlue) );
@@ -194,12 +201,13 @@ TEST(LHCb002, JohnsonPlusGaussFit) {
   pdf_tot->plotOn(plot_pos, Slice(cat, "pos"), ProjWData( cat, *data_h ), LineColor(kGreen), Components(gauss_1_pos));
   pdf_tot->plotOn(plot_pos, Slice(cat, "pos"), ProjWData( cat, *data_h ), LineColor(kOrange), Components(gauss_2_pos));
   pdf_tot->plotOn(plot_pos, Slice(cat, "pos"), ProjWData( cat, *data_h ), LineColor(kBlack), Components(gauss_3_pos));
+//  sig_pos.paramOn(plot_pos);
+  pdf_pos.paramOn(plot_pos);
   plot_pos->Draw();
-  c_pos->DrawClone();
-  c_pos->SaveAs("/tmp/c_pos.png");
+  c_pos.DrawClone();
+  c_pos.SaveAs("/tmp/c_pos.png");
 
-  TCanvas *c_neg = new TCanvas("c_neg", "c_neg", 900, 900);
-  c_neg->cd();
+  TCanvas c_neg("c_neg", "c_neg", 900, 900);
   RooPlot * plot_neg = mass.frame( x1, x2);
   data_h->plotOn( plot_neg, Cut("cat==cat::neg"));
   cat.setLabel("neg");
@@ -209,8 +217,7 @@ TEST(LHCb002, JohnsonPlusGaussFit) {
   pdf_tot->plotOn(plot_neg, Slice(cat, "neg"), ProjWData( cat, *data_h ), LineColor(kOrange), Components(gauss_2_neg));
   pdf_tot->plotOn(plot_neg, Slice(cat, "neg"), ProjWData( cat, *data_h ), LineColor(kBlack), Components(gauss_3_neg));
   plot_neg->Draw();
-
-  c_neg->DrawClone();
+  c_neg.DrawClone();
 #endif
 }
 
