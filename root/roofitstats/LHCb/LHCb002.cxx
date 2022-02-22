@@ -13,7 +13,7 @@
 #include "RooSimultaneous.h"
 #include "RooFitResult.h"
 #include "RooChi2Var.h"
-#include "RooMinuit.h"
+#include "RooMinimizer.h"
 
 #include "TFile.h"
 #include "TH1D.h"
@@ -155,7 +155,7 @@ TEST(LHCb002, JohnsonPlusGaussFit) {
 
 
   RooChi2Var chi2("chi2", "chi2", *pdf_tot, *data_h, Extended(true));
-  RooMinuit m1(chi2) ;
+  RooMinimizer m1(chi2) ;
 //  m1.setVerbose(kTRUE);
 //  m1.setPrintLevel(3);
   m1.setEps(1e-16);
